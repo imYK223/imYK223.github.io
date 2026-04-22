@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Yash Kalyani — Computer Vision & Robotics Engineer</title>
+<meta name="description" content="Yash Kalyani — M.Sc. Robotic Systems Engineering (RWTH Aachen). Computer Vision & Robotics engineer building real-time 6D pose estimation pipelines with FoundationPose, SAM-2, and ROS2." />
+<meta name="author" content="Yash Kalyani" />
+<meta name="keywords" content="Yash Kalyani, Computer Vision Engineer, Robotics Engineer, 6D Pose Estimation, FoundationPose, SAM-2, ROS2, PyTorch, RWTH Aachen, Fraunhofer EAS" />
+<meta name="theme-color" content="#05060a" />
+<!-- Open Graph / LinkedIn -->
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Yash Kalyani — Computer Vision & Robotics Engineer" />
+<meta property="og:description" content="M.Sc. Robotic Systems Engineering (RWTH Aachen). Real-time perception pipelines: 6D pose estimation, SAM-2 segmentation, ROS2 integration." />
+<meta property="og:site_name" content="Yash Kalyani" />
+<!-- Twitter -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Yash Kalyani — Computer Vision & Robotics Engineer" />
+<meta name="twitter:description" content="M.Sc. Robotic Systems Engineering (RWTH Aachen). Building real-time perception pipelines." />
+<!-- Favicon (inline SVG) -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%2305060a'/%3E%3Ctext x='50%25' y='54%25' font-family='JetBrains Mono, monospace' font-size='28' font-weight='700' fill='%237cf7c8' text-anchor='middle' dominant-baseline='middle'%3EYK%3C/text%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ["Space Grotesk", "system-ui", "sans-serif"],
+          mono: ["JetBrains Mono", "ui-monospace", "monospace"],
+        },
+        colors: {
+          ink: "#05060a",
+          surface: "#0b0d14",
+          card: "#10131c",
+          line: "#1b1f2c",
+          neon: "#7cf7c8",
+          iris: "#8a7cff",
+          amber: "#ffb648",
+          muted: "#7a8296",
+        },
+      },
+    },
+  };
+</script>
+<style>
+  :root {
+    color-scheme: dark;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background:
+      radial-gradient(1100px 600px at 80% -10%, rgba(124,247,200,0.08), transparent 60%),
+      radial-gradient(800px 500px at -10% 10%, rgba(138,124,255,0.08), transparent 60%),
+      #05060a;
+    color: #e7ecf3;
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    overflow-x: hidden;
+  }
+  /* Subtle grid backdrop */
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse at center, black 35%, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse at center, black 35%, transparent 80%);
+  }
+  /* Noise overlay */
+  .noise::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.035 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+    mix-blend-mode: overlay;
+    opacity: 0.4;
+  }
+  /* Typed caret */
+  .caret { display: inline-block; width: 10px; background: #7cf7c8; margin-left: 2px; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+  /* Link underline animation */
+  .nav-link { position: relative; }
+  .nav-link::after {
+    content: "";
+    position: absolute; left: 0; bottom: -4px; height: 1px; width: 100%;
+    background: linear-gradient(90deg, #7cf7c8, #8a7cff);
+    transform: scaleX(0); transform-origin: right; transition: transform .3s ease;
+  }
+  .nav-link:hover::after { transform: scaleX(1); transform-origin: left; }
+  /* Tag pill */
+  .pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 999px;
+    background: rgba(124,247,200,0.06);
+    border: 1px solid rgba(124,247,200,0.22);
+    color: #a9f3d2; font-family: "JetBrains Mono", monospace;
+    font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase;
+  }
+  /* Card */
+  .card-tile {
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0));
+    border: 1px solid #1b1f2c;
+    transition: transform .4s cubic-bezier(.2,.7,.2,1), border-color .3s ease, box-shadow .3s ease;
+    position: relative;
+    overflow: hidden;
+  }
+  .card-tile:hover {
+    transform: translateY(-4px);
+    border-color: rgba(124,247,200,0.35);
+    box-shadow: 0 30px 80px -40px rgba(124,247,200,0.25);
+  }
+  .card-tile::before {
+    content: "";
+    position: absolute; inset: 0;
+    background: radial-gradient(600px 120px at var(--x,50%) var(--y,0%), rgba(124,247,200,0.10), transparent 40%);
+    opacity: 0; transition: opacity .4s ease;
+    pointer-events: none;
+  }
+  .card-tile:hover::before { opacity: 1; }
+  /* Reveal on scroll */
+  .reveal { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s cubic-bezier(.2,.7,.2,1); }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  /* Rotating cube */
+  .scene { perspective: 1200px; }
+  .cube {
+    position: relative; width: 200px; height: 200px;
+    transform-style: preserve-3d; animation: spin 22s linear infinite;
+  }
+  .cube .face {
+    position: absolute; inset: 0;
+    border: 1px solid rgba(124,247,200,0.35);
+    background: linear-gradient(135deg, rgba(124,247,200,0.06), rgba(138,124,255,0.04));
+    box-shadow: inset 0 0 40px rgba(124,247,200,0.08);
+  }
+  .cube .f1 { transform: translateZ(100px); }
+  .cube .f2 { transform: rotateY(180deg) translateZ(100px); }
+  .cube .f3 { transform: rotateY(90deg)  translateZ(100px); }
+  .cube .f4 { transform: rotateY(-90deg) translateZ(100px); }
+  .cube .f5 { transform: rotateX(90deg)  translateZ(100px); }
+  .cube .f6 { transform: rotateX(-90deg) translateZ(100px); }
+  @keyframes spin {
+    0%   { transform: rotateX(-20deg) rotateY(0deg); }
+    100% { transform: rotateX(-20deg) rotateY(360deg); }
+  }
+  /* Pose estimation corner dots */
+  .corner-dot { width: 8px; height: 8px; border-radius: 999px; background: #7cf7c8; box-shadow: 0 0 12px #7cf7c8; }
+  /* Accent gradient text */
+  .grad-text {
+    background: linear-gradient(90deg, #e7ecf3 0%, #7cf7c8 50%, #8a7cff 100%);
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  /* Button */
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 8px;
+    background: #7cf7c8; color: #06110c; font-weight: 600;
+    transition: transform .2s ease, box-shadow .3s ease;
+    border: 1px solid rgba(124,247,200,0.5);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 40px -12px rgba(124,247,200,0.55); }
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 12px 20px; border-radius: 8px;
+    background: transparent; color: #e7ecf3;
+    border: 1px solid #1f2436;
+    transition: all .2s ease;
+  }
+  .btn-ghost:hover { border-color: rgba(124,247,200,0.45); color: #7cf7c8; }
+  /* Timeline */
+  .timeline-dot {
+    position: absolute; left: -5px; top: 10px;
+    width: 10px; height: 10px; border-radius: 999px;
+    background: #7cf7c8; box-shadow: 0 0 0 4px rgba(124,247,200,0.15);
+  }
+  /* Skill chip */
+  .chip {
+    padding: 8px 12px; border: 1px solid #1b1f2c; border-radius: 8px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px; color: #c9d0de;
+    background: rgba(255,255,255,0.015);
+    transition: all .2s ease;
+  }
+  .chip:hover { border-color: rgba(124,247,200,0.4); color: #7cf7c8; transform: translateY(-2px); }
+  /* Marquee tape */
+  .marquee {
+    display: flex; gap: 48px; white-space: nowrap;
+    animation: marquee 40s linear infinite;
+  }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  /* Section labels */
+  .section-label {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: "JetBrains Mono", monospace; font-size: 12px;
+    color: #7cf7c8; letter-spacing: 0.12em; text-transform: uppercase;
+  }
+  .section-label::before {
+    content: ""; display: inline-block; width: 24px; height: 1px; background: #7cf7c8;
+  }
+  /* Scrollbar (webkit) */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: #05060a; }
+  ::-webkit-scrollbar-thumb { background: #1b1f2c; border-radius: 999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #2a3144; }
+</style>
+</head>
+<body class="antialiased">
+
+<!-- Top announcement tape -->
+<div class="border-b border-line bg-surface/60 backdrop-blur">
+  <div class="overflow-hidden py-2">
+    <div class="marquee text-[11px] font-mono uppercase tracking-[0.2em] text-muted">
+      <span class="flex items-center gap-12">
+        <span class="text-white/80">Yash Kalyani</span>
+        <span>M.Sc. in Robotic Systems Engineering</span>
+        <span>Aachen · Mumbai</span>
+        <span>yashkalyani223@gmail.com</span>
+        <span>+91 9096 667 056 · +49 1723 036 894</span>
+        <span class="text-white/80">Yash Kalyani</span>
+        <span>M.Sc. in Robotic Systems Engineering</span>
+        <span>Aachen · Mumbai</span>
+        <span>yashkalyani223@gmail.com</span>
+        <span>+91 9096 667 056 · +49 1723 036 894</span>
+      </span>
+    </div>
+  </div>
+</div>
+
+<!-- Navigation -->
+<header class="sticky top-0 z-40 backdrop-blur bg-ink/70 border-b border-line">
+  <div class="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-2 group">
+      <span class="inline-flex items-center justify-center w-8 h-8 rounded-md border border-line bg-card font-mono text-neon text-sm">YK</span>
+      <span class="font-medium tracking-tight">Yash Kalyani</span>
+    </a>
+    <nav class="hidden md:flex items-center gap-8 text-sm text-muted">
+      <a class="nav-link hover:text-white" href="#about">About</a>
+      <a class="nav-link hover:text-white" href="#experience">Experience</a>
+      <a class="nav-link hover:text-white" href="#projects">Projects</a>
+      <a class="nav-link hover:text-white" href="#skills">Skills</a>
+      <a class="nav-link hover:text-white" href="#education">Education</a>
+    </nav>
+    <a href="#contact" class="btn-primary text-sm !py-2 !px-4">
+      Get in touch
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+    </a>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="top" class="relative overflow-hidden">
+  <div class="absolute inset-0 grid-bg pointer-events-none"></div>
+  <div class="max-w-6xl mx-auto px-6 pt-20 pb-28 relative">
+    <div class="grid lg:grid-cols-12 gap-10 items-center">
+      <div class="lg:col-span-7">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="pill"><span class="w-1.5 h-1.5 rounded-full bg-neon animate-pulse"></span> Open to opportunities</span>
+          <span class="text-xs font-mono text-muted">Aachen · Mumbai</span>
+        </div>
+        <h1 class="text-5xl sm:text-6xl md:text-7xl leading-[1.02] tracking-tight font-medium">
+          Giving robots<br/>
+          <span class="grad-text">eyes that understand</span><br/>
+          the world.
+        </h1>
+        <p class="mt-6 text-lg text-muted max-w-xl leading-relaxed">
+          Hi, I'm Yash — a Computer Vision &amp; Robotics engineer building real-time perception
+          pipelines. I specialize in
+          <span id="typed" class="text-neon font-medium"></span><span class="caret">&nbsp;</span>
+        </p>
+
+        <div class="mt-8 flex flex-wrap items-center gap-3">
+          <a href="#projects" class="btn-primary">
+            View projects
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+          </a>
+          <a href="#contact" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+            yashkalyani223@gmail.com
+          </a>
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22V8zm7.55 0h4.37v1.92h.06c.61-1.15 2.1-2.37 4.32-2.37 4.62 0 5.48 3.04 5.48 7V22h-4.56v-6.19c0-1.48-.03-3.38-2.06-3.38-2.06 0-2.38 1.61-2.38 3.27V22H7.77V8z"/></svg>
+            LinkedIn
+          </a>
+          <a href="Yash_Kalyani_CV.pdf" download class="btn-ghost">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download CV
+          </a>
+        </div>
+
+        <!-- Stats strip -->
+        <div class="mt-12 grid grid-cols-3 gap-6 max-w-lg">
+          <div>
+            <div class="text-3xl font-medium text-white">3+ yrs</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-muted mt-1">Robotics &amp; Computer Vision</div>
+          </div>
+          <div>
+            <div class="text-3xl font-medium text-white">6D</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-muted mt-1">Pose estimation pipelines</div>
+          </div>
+          <div>
+            <div class="text-3xl font-medium text-white">8.8</div>
+            <div class="text-xs font-mono uppercase tracking-wider text-muted mt-1">M.Sc. Robotic Systems Engineering · RWTH Aachen</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hero visual: rotating wireframe cube + pose overlay -->
+      <div class="lg:col-span-5">
+        <div class="relative aspect-square rounded-2xl border border-line bg-card overflow-hidden noise">
+          <!-- Corner markers (ArUco/pose inspired) -->
+          <div class="absolute top-3 left-3 flex items-center gap-2 font-mono text-[10px] text-neon">
+            <span class="corner-dot"></span> TRACKING
+          </div>
+          <div class="absolute top-3 right-3 font-mono text-[10px] text-muted">640 × 480 · 30 fps</div>
+          <div class="absolute bottom-3 left-3 font-mono text-[10px] text-muted">X: 0.214 · Y: -0.038 · Z: 0.560</div>
+          <div class="absolute bottom-3 right-3 font-mono text-[10px] text-iris">SAM-2 · FoundationPose</div>
+
+          <!-- Bounding box corners -->
+          <div class="absolute top-10 left-10 w-6 h-6 border-t-2 border-l-2 border-neon/70"></div>
+          <div class="absolute top-10 right-10 w-6 h-6 border-t-2 border-r-2 border-neon/70"></div>
+          <div class="absolute bottom-10 left-10 w-6 h-6 border-b-2 border-l-2 border-neon/70"></div>
+          <div class="absolute bottom-10 right-10 w-6 h-6 border-b-2 border-r-2 border-neon/70"></div>
+
+          <!-- Rotating cube centerpiece -->
+          <div class="absolute inset-0 flex items-center justify-center scene">
+            <div class="cube">
+              <div class="face f1"></div>
+              <div class="face f2"></div>
+              <div class="face f3"></div>
+              <div class="face f4"></div>
+              <div class="face f5"></div>
+              <div class="face f6"></div>
+            </div>
+          </div>
+
+          <!-- Axis gizmo -->
+          <svg class="absolute bottom-6 right-6" width="70" height="70" viewBox="0 0 70 70">
+            <line x1="35" y1="35" x2="60" y2="35" stroke="#ff4d6d" stroke-width="2"/>
+            <line x1="35" y1="35" x2="35" y2="10" stroke="#7cf7c8" stroke-width="2"/>
+            <line x1="35" y1="35" x2="18" y2="52" stroke="#8a7cff" stroke-width="2"/>
+            <text x="62" y="38" font-family="JetBrains Mono" font-size="8" fill="#ff4d6d">X</text>
+            <text x="37" y="10" font-family="JetBrains Mono" font-size="8" fill="#7cf7c8">Y</text>
+            <text x="10" y="58" font-family="JetBrains Mono" font-size="8" fill="#8a7cff">Z</text>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT / WHAT I OFFER -->
+<section id="about" class="relative py-24 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="reveal">
+      <span class="section-label">01 / What I offer</span>
+      <h2 class="mt-4 text-4xl md:text-5xl tracking-tight font-medium max-w-3xl">
+        I turn cutting-edge research into <span class="grad-text">production-ready perception systems.</span>
+      </h2>
+      <p class="mt-6 text-muted max-w-2xl leading-relaxed">
+        From a bachelor's in mechanical engineering to a master's in robotic systems, I bridge the
+        hardware-software gap — shipping robotic pipelines that actually run in the real world,
+        not just in benchmarks.
+      </p>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-3 gap-4 reveal">
+      <!-- Offer 1 -->
+      <div class="card-tile rounded-xl p-6">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7cf7c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+          </div>
+          <span class="font-mono text-[10px] text-muted">01</span>
+        </div>
+        <h3 class="mt-5 text-xl font-medium">6D Pose Estimation</h3>
+        <p class="mt-2 text-sm text-muted leading-relaxed">
+          Real-time pipelines with FoundationPose &amp; SAM-2. Sub-millimeter accuracy on Intel
+          RealSense — proven in lab and demo deployments.
+        </p>
+      </div>
+      <!-- Offer 2 -->
+      <div class="card-tile rounded-xl p-6">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-lg bg-iris/10 border border-iris/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8a7cff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 17h7"/><path d="M17 14v7"/></svg>
+          </div>
+          <span class="font-mono text-[10px] text-muted">02</span>
+        </div>
+        <h3 class="mt-5 text-xl font-medium">ROS &amp; Robotics Integration</h3>
+        <p class="mt-2 text-sm text-muted leading-relaxed">
+          ROS/ROS2 packages, MoveIt planning, Isaac Sim, RealSense SDK — I wire perception to
+          motion with clean launch files and reproducible Docker setups.
+        </p>
+      </div>
+      <!-- Offer 3 -->
+      <div class="card-tile rounded-xl p-6">
+        <div class="flex items-center justify-between">
+          <div class="w-10 h-10 rounded-lg bg-amber/10 border border-amber/30 flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffb648" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20"/><path d="m2 7 10 5 10-5"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/></svg>
+          </div>
+          <span class="font-mono text-[10px] text-muted">03</span>
+        </div>
+        <h3 class="mt-5 text-xl font-medium">Deep Learning Deployment</h3>
+        <p class="mt-2 text-sm text-muted leading-relaxed">
+          Training &amp; shipping YOLOv11, RT-DETR, Detectron2. From BlenderProc synthetic data
+          to GitLab CI/CD — I own the whole loop, not just the notebook.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- EXPERIENCE -->
+<section id="experience" class="relative py-24 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="reveal">
+      <span class="section-label">02 / Experience</span>
+      <h2 class="mt-4 text-4xl md:text-5xl tracking-tight font-medium max-w-3xl">
+        Work that ships, not just slides.
+      </h2>
+    </div>
+
+    <div class="mt-14 grid lg:grid-cols-12 gap-10">
+      <div class="lg:col-span-4 reveal">
+        <p class="text-muted text-sm leading-relaxed">
+          Two years across Fraunhofer research and RWTH labs — always closing the loop from
+          paper to working demo on real robots.
+        </p>
+      </div>
+
+      <div class="lg:col-span-8 relative reveal">
+        <div class="absolute left-0 top-0 bottom-0 w-px bg-gradient-to-b from-neon/40 via-line to-transparent"></div>
+
+        <!-- Job 1 -->
+        <div class="relative pl-8 pb-14">
+          <span class="timeline-dot"></span>
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-xl font-medium">Intern &amp; Student Assistant — Robotics &amp; Computer Vision</h3>
+            <span class="font-mono text-xs text-muted">Jun 2024 — Dec 2025</span>
+          </div>
+          <div class="mt-1 text-sm text-neon font-mono">Fraunhofer EAS · Dresden, Germany</div>
+          <ul class="mt-4 space-y-2 text-sm text-muted leading-relaxed">
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Deployed an AI-powered object localization system using FoundationPose.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Evaluated feature projection scores for failure cases like object loss and incorrect pose estimation.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Integrated SAM-2 for automatic image segmentation, boosting detection stability across variable lighting; used its memory encoder to detect object removal and deactivate inference.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Built a real-time 6D pose pipeline (FoundationPose + SAM-2) reaching <span class="text-white font-medium">1 mm average positional accuracy</span>.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Created ROS packages unifying FoundationPose + SAM-2, tested on Intel RealSense D455.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Modeled and 3D-printed a custom D455 camera mount for streamlined lab deployment.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Managed Docker-based dev environments with clean GitLab documentation for reproducibility.</li>
+          </ul>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="chip">FoundationPose</span>
+            <span class="chip">SAM-2</span>
+            <span class="chip">ROS</span>
+            <span class="chip">RealSense</span>
+            <span class="chip">Docker</span>
+            <span class="chip">GitLab CI/CD</span>
+          </div>
+        </div>
+
+        <!-- Job 2 -->
+        <div class="relative pl-8">
+          <span class="timeline-dot"></span>
+          <div class="flex flex-wrap items-baseline justify-between gap-2">
+            <h3 class="text-xl font-medium">Research Intern — Reinforcement Learning</h3>
+            <span class="font-mono text-xs text-muted">May 2023 — Oct 2023</span>
+          </div>
+          <div class="mt-1 text-sm text-iris font-mono">RWTH Aachen University · Aachen, Germany</div>
+          <ul class="mt-4 space-y-2 text-sm text-muted leading-relaxed">
+            <li class="flex gap-3"><span class="text-iris mt-1.5">▸</span> Enhanced PPO with learning-rate annealing and gradient clipping for smoother convergence.</li>
+            <li class="flex gap-3"><span class="text-iris mt-1.5">▸</span> Presented weekly updates and distilled complex ML algorithms into intuitive explanations.</li>
+          </ul>
+          <div class="mt-4 flex flex-wrap gap-2">
+            <span class="chip">PPO</span>
+            <span class="chip">PyTorch</span>
+            <span class="chip">Reinforcement Learning</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROJECTS -->
+<section id="projects" class="relative py-24 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="reveal flex items-end justify-between flex-wrap gap-4">
+      <div>
+        <span class="section-label">03 / Selected projects</span>
+        <h2 class="mt-4 text-4xl md:text-5xl tracking-tight font-medium max-w-3xl">
+          Built with code, calibrated with cameras.
+        </h2>
+      </div>
+      <a href="#contact" class="font-mono text-xs text-muted hover:text-neon transition-colors">
+        Request full project portfolio →
+      </a>
+    </div>
+
+    <!-- Project 1: Master Thesis -->
+    <article class="mt-14 reveal card-tile rounded-2xl overflow-hidden">
+      <div class="grid lg:grid-cols-5">
+        <div class="lg:col-span-3 p-8 md:p-10">
+          <div class="flex flex-wrap items-center gap-2">
+            <span class="pill">Master Thesis</span>
+            <span class="font-mono text-[11px] text-muted">2025</span>
+          </div>
+          <h3 class="mt-5 text-2xl md:text-3xl font-medium tracking-tight">
+            6D Pose Detection &amp; Validation System for Industrial Applications
+          </h3>
+          <p class="mt-3 text-sm text-muted leading-relaxed">
+            A three-stage pipeline — classification &amp; segmentation, pose estimation, then
+            pose validation — designed for downstream robotic tasks like bin-picking.
+          </p>
+          <ul class="mt-5 space-y-2 text-sm text-muted">
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Trained RT-DETR, Detectron2, YOLOv11 on custom industrial components.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Generated ground-truth segmentation datasets using SAM-2.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Benchmarked FoundationPose vs a custom PPF + FGR + FPFH estimator.</li>
+            <li class="flex gap-3"><span class="text-neon mt-1.5">▸</span> Validated 6D poses via ArUco-tagged ground truth, evaluated with BOP-style metrics.</li>
+          </ul>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span class="chip">RT-DETR</span>
+            <span class="chip">YOLOv11</span>
+            <span class="chip">Detectron2</span>
+            <span class="chip">SAM-2</span>
+            <span class="chip">Open3D</span>
+            <span class="chip">PCL</span>
+            <span class="chip">ArUco</span>
+          </div>
+        </div>
+        <!-- Visual -->
+        <div class="lg:col-span-2 relative border-t lg:border-t-0 lg:border-l border-line bg-[radial-gradient(400px_200px_at_60%_30%,rgba(124,247,200,0.08),transparent_60%)]">
+          <div class="aspect-[4/3] lg:aspect-auto lg:h-full relative">
+            <svg class="absolute inset-0 w-full h-full" viewBox="0 0 400 300" fill="none">
+              <!-- grid -->
+              <g stroke="rgba(255,255,255,0.04)">
+                <path d="M0 75 L400 75"/><path d="M0 150 L400 150"/><path d="M0 225 L400 225"/>
+                <path d="M100 0 L100 300"/><path d="M200 0 L200 300"/><path d="M300 0 L300 300"/>
+              </g>
+              <!-- object wireframe -->
+              <g transform="translate(200 150)">
+                <polygon points="-60,-40 60,-40 80,-20 80,40 -40,40 -60,20" fill="rgba(124,247,200,0.04)" stroke="#7cf7c8"/>
+                <polygon points="-60,-40 -40,-60 80,-60 60,-40" fill="rgba(124,247,200,0.02)" stroke="#7cf7c8" stroke-opacity="0.5"/>
+                <polygon points="80,-60 100,-40 100,20 80,40 80,-20" fill="rgba(124,247,200,0.02)" stroke="#7cf7c8" stroke-opacity="0.5"/>
+                <!-- corners -->
+                <circle cx="-60" cy="-40" r="3" fill="#7cf7c8"/>
+                <circle cx="60" cy="-40" r="3" fill="#7cf7c8"/>
+                <circle cx="80" cy="-20" r="3" fill="#7cf7c8"/>
+                <circle cx="80" cy="40" r="3" fill="#7cf7c8"/>
+                <circle cx="-40" cy="40" r="3" fill="#7cf7c8"/>
+                <circle cx="-60" cy="20" r="3" fill="#7cf7c8"/>
+              </g>
+              <text x="14" y="26" font-family="JetBrains Mono" font-size="10" fill="#7cf7c8">pose.validate()</text>
+              <text x="14" y="44" font-family="JetBrains Mono" font-size="9" fill="#7a8296">class: bracket_03 · conf: 0.982</text>
+              <text x="14" y="285" font-family="JetBrains Mono" font-size="9" fill="#7a8296">ADD-S: 0.87 · BOP metric</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </article>
+
+    <!-- Project 2 & 3 grid -->
+    <div class="mt-6 grid md:grid-cols-2 gap-6">
+      <!-- Project 2 -->
+      <article class="reveal card-tile rounded-2xl p-8">
+        <div class="flex items-center gap-2">
+          <span class="pill">ROS Noetic</span>
+          <span class="font-mono text-[11px] text-muted">Team project</span>
+        </div>
+        <h3 class="mt-4 text-xl md:text-2xl font-medium tracking-tight">
+          AR-Tag Guided Welding Path Planner
+        </h3>
+        <p class="mt-2 text-sm text-muted leading-relaxed">
+          Collaborative ROS Noetic project to track and follow a welding arc using Augmented
+          Reality tags. Integrated external AR tag tracking, ROS launch orchestration, webcam
+          stream to RViz, and Python-based collision-avoidance safety nodes.
+        </p>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <span class="chip">ROS Noetic</span>
+          <span class="chip">AR Tags</span>
+          <span class="chip">RViz</span>
+          <span class="chip">Python</span>
+          <span class="chip">Linux</span>
+        </div>
+        <div class="mt-6 flex items-center gap-3 text-sm font-mono text-muted">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"/></svg>
+          View on GitHub →
+        </div>
+      </article>
+
+      <!-- Project 3: RL PPO -->
+      <article class="reveal card-tile rounded-2xl p-8">
+        <div class="flex items-center gap-2">
+          <span class="pill" style="background:rgba(138,124,255,0.06);border-color:rgba(138,124,255,0.25);color:#c7bdff;">Research</span>
+          <span class="font-mono text-[11px] text-muted">RWTH lab</span>
+        </div>
+        <h3 class="mt-4 text-xl md:text-2xl font-medium tracking-tight">
+          PPO with Annealing &amp; Gradient Clipping
+        </h3>
+        <p class="mt-2 text-sm text-muted leading-relaxed">
+          Deep-dive into Proximal Policy Optimization — tuning learning-rate annealing and
+          gradient clipping for smoother convergence. Weekly teach-backs distilled complex RL
+          math into concepts the team could build on.
+        </p>
+        <div class="mt-5 flex flex-wrap gap-2">
+          <span class="chip">PPO</span>
+          <span class="chip">PyTorch</span>
+          <span class="chip">RL</span>
+          <span class="chip">Research</span>
+        </div>
+        <!-- mini chart -->
+        <div class="mt-6">
+          <svg viewBox="0 0 300 70" class="w-full h-16">
+            <defs>
+              <linearGradient id="g1" x1="0" x2="0" y1="0" y2="1">
+                <stop offset="0%" stop-color="#8a7cff" stop-opacity="0.4"/>
+                <stop offset="100%" stop-color="#8a7cff" stop-opacity="0"/>
+              </linearGradient>
+            </defs>
+            <path d="M0 55 C 30 52, 50 40, 80 36 S 140 20, 170 18 S 240 10, 300 8 L 300 70 L 0 70 Z" fill="url(#g1)"/>
+            <path d="M0 55 C 30 52, 50 40, 80 36 S 140 20, 170 18 S 240 10, 300 8" stroke="#8a7cff" stroke-width="1.5" fill="none"/>
+          </svg>
+          <div class="flex justify-between font-mono text-[10px] text-muted mt-1">
+            <span>episode 0</span><span>reward ↑</span><span>episode 1k</span>
+          </div>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills" class="relative py-24 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="reveal">
+      <span class="section-label">04 / Toolbox</span>
+      <h2 class="mt-4 text-4xl md:text-5xl tracking-tight font-medium max-w-3xl">
+        A stack tuned for <span class="grad-text">perception, planning, and production.</span>
+      </h2>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-2 gap-6">
+      <div class="card-tile rounded-xl p-6 reveal">
+        <div class="flex items-center gap-2 font-mono text-xs text-neon uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-neon"></span> ML &amp; AI
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="chip">PyTorch</span><span class="chip">TensorFlow</span>
+          <span class="chip">Scikit-learn</span><span class="chip">Transformers</span>
+          <span class="chip">OpenCV</span><span class="chip">SAM</span>
+          <span class="chip">Zero-Shot Learning</span><span class="chip">Image Segmentation</span>
+          <span class="chip">Pose Estimation</span><span class="chip">Open3D</span>
+          <span class="chip">Model Deployment</span>
+        </div>
+      </div>
+
+      <div class="card-tile rounded-xl p-6 reveal">
+        <div class="flex items-center gap-2 font-mono text-xs text-iris uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-iris"></span> Robotics &amp; Real-Time
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="chip">ROS Noetic</span><span class="chip">ROS2</span>
+          <span class="chip">MoveIt</span><span class="chip">RealSense SDK</span>
+          <span class="chip">RViz</span><span class="chip">Isaac Sim</span>
+        </div>
+      </div>
+
+      <div class="card-tile rounded-xl p-6 reveal">
+        <div class="flex items-center gap-2 font-mono text-xs text-amber uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber"></span> Dev &amp; DevOps
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="chip">Git</span><span class="chip">GitHub</span>
+          <span class="chip">GitLab CI/CD</span><span class="chip">Docker</span>
+          <span class="chip">Linux</span><span class="chip">Bash</span>
+          <span class="chip">Conda</span><span class="chip">YAML</span>
+          <span class="chip">VS Code</span><span class="chip">Jupyter</span>
+        </div>
+      </div>
+
+      <div class="card-tile rounded-xl p-6 reveal">
+        <div class="flex items-center gap-2 font-mono text-xs text-white uppercase tracking-wider">
+          <span class="w-1.5 h-1.5 rounded-full bg-white"></span> Simulation &amp; Data
+        </div>
+        <div class="mt-4 flex flex-wrap gap-2">
+          <span class="chip">BlenderProc</span><span class="chip">ANSYS</span>
+          <span class="chip">ADD-S</span><span class="chip">Mesh Alignment</span>
+          <span class="chip">NumPy</span><span class="chip">Pandas</span>
+          <span class="chip">Matplotlib</span><span class="chip">Seaborn</span>
+          <span class="chip">Google Colab</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Languages -->
+    <div class="mt-8 reveal flex flex-wrap items-center gap-6 text-sm font-mono text-muted">
+      <span class="text-white/60">Languages</span>
+      <span>English <span class="text-neon">C2</span></span>
+      <span>Hindi <span class="text-neon">Native</span></span>
+      <span>German <span class="text-amber">A2</span></span>
+    </div>
+  </div>
+</section>
+
+<!-- EDUCATION -->
+<section id="education" class="relative py-24 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="reveal">
+      <span class="section-label">05 / Education</span>
+      <h2 class="mt-4 text-4xl md:text-5xl tracking-tight font-medium max-w-3xl">
+        Mechanical foundations, machine-learning future.
+      </h2>
+    </div>
+
+    <div class="mt-14 grid md:grid-cols-2 gap-6">
+      <div class="card-tile rounded-xl p-8 reveal">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-xl font-medium">RWTH Aachen University</h3>
+            <p class="text-sm text-muted mt-1">Germany</p>
+          </div>
+          <span class="font-mono text-xs text-neon">CGPA 8.8</span>
+        </div>
+        <div class="mt-4 text-sm text-neon font-mono">M.Sc. Robotic Systems Engineering</div>
+        <p class="text-xs font-mono text-muted mt-1">Oct 2022 — Oct 2025</p>
+        <p class="mt-4 text-sm text-muted leading-relaxed">
+          Coursework: Computer Vision · Robotics · Machine Learning · ROS · Deep Learning ·
+          Reinforcement Learning · Robotic Sensor Systems · Artificial Intelligence · Kinematics &amp; Dynamics.
+        </p>
+      </div>
+
+      <div class="card-tile rounded-xl p-8 reveal">
+        <div class="flex items-start justify-between gap-4">
+          <div>
+            <h3 class="text-xl font-medium">University of Mumbai</h3>
+            <p class="text-sm text-muted mt-1">India</p>
+          </div>
+          <span class="font-mono text-xs text-amber">CGPA 9.4</span>
+        </div>
+        <div class="mt-4 text-sm text-amber font-mono">B.Tech Mechanical Engineering</div>
+        <p class="text-xs font-mono text-muted mt-1">May 2018 — May 2022</p>
+        <p class="mt-4 text-sm text-muted leading-relaxed">
+          Foundation in mechanics, dynamics, and systems thinking — the hardware intuition that
+          grounds my software work in robotics.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" class="relative py-24 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6">
+    <div class="relative rounded-2xl border border-line bg-card p-10 md:p-16 overflow-hidden noise">
+      <div class="absolute -top-20 -right-20 w-80 h-80 rounded-full bg-neon/10 blur-3xl pointer-events-none"></div>
+      <div class="absolute -bottom-20 -left-20 w-80 h-80 rounded-full bg-iris/10 blur-3xl pointer-events-none"></div>
+
+      <div class="relative">
+        <span class="section-label">06 / Let's build</span>
+        <h2 class="mt-4 text-4xl md:text-6xl tracking-tight font-medium max-w-4xl">
+          Have a perception problem<br/> worth solving?
+        </h2>
+        <p class="mt-6 text-muted max-w-xl leading-relaxed">
+          I'm actively looking for Computer Vision / Robotics engineering roles — full-time,
+          Europe or remote. Also open to collaborations on pose estimation, segmentation, and
+          ROS integration.
+        </p>
+
+        <div class="mt-10 grid sm:grid-cols-2 gap-4 max-w-2xl">
+          <a href="mailto:yashkalyani223@gmail.com" class="card-tile rounded-xl p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-neon/10 border border-neon/30 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#7cf7c8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 5L2 7"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-mono text-muted uppercase tracking-wider">Email</div>
+              <div class="text-sm">yashkalyani223@gmail.com</div>
+            </div>
+          </a>
+
+          <a href="https://www.linkedin.com/" target="_blank" rel="noreferrer" class="card-tile rounded-xl p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-iris/10 border border-iris/30 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#8a7cff"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1s2.48 1.12 2.48 2.5zM.22 8h4.56v14H.22V8zm7.55 0h4.37v1.92h.06c.61-1.15 2.1-2.37 4.32-2.37 4.62 0 5.48 3.04 5.48 7V22h-4.56v-6.19c0-1.48-.03-3.38-2.06-3.38-2.06 0-2.38 1.61-2.38 3.27V22H7.77V8z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-mono text-muted uppercase tracking-wider">LinkedIn</div>
+              <div class="text-sm">Connect with me</div>
+            </div>
+          </a>
+
+          <div class="card-tile rounded-xl p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-amber/10 border border-amber/30 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ffb648" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-mono text-muted uppercase tracking-wider">Phone</div>
+              <div class="text-sm leading-tight">
+                <span class="text-muted/70 text-xs">IN</span> +91 9096 667 056<br/>
+                <span class="text-muted/70 text-xs">DE</span> +49 1723 036 894
+              </div>
+            </div>
+          </div>
+
+          <div class="card-tile rounded-xl p-5 flex items-center gap-4">
+            <div class="w-10 h-10 rounded-lg bg-white/5 border border-white/20 flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#e7ecf3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 7-8 12-8 12s-8-5-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div>
+              <div class="text-xs font-mono text-muted uppercase tracking-wider">Based in</div>
+              <div class="text-sm">Aachen, Germany · Mumbai, India</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="py-10 border-t border-line">
+  <div class="max-w-6xl mx-auto px-6 flex flex-wrap items-center justify-between gap-4 text-xs font-mono text-muted">
+    <div>© 2026 Yash Kalyani. Crafted with perception &amp; precision.</div>
+    <div class="flex items-center gap-2">
+      <span class="w-1.5 h-1.5 rounded-full bg-neon animate-pulse"></span>
+      All systems operational
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Typed text cycler
+  (function () {
+    const el = document.getElementById("typed");
+    const phrases = [
+      "6D pose estimation.",
+      "SAM-2 segmentation.",
+      "ROS2 robotics integration.",
+      "deep learning deployment.",
+      "real-time perception.",
+    ];
+    let i = 0, j = 0, deleting = false;
+    function tick() {
+      const p = phrases[i];
+      if (!deleting) {
+        el.textContent = p.slice(0, ++j);
+        if (j === p.length) { deleting = true; setTimeout(tick, 1600); return; }
+      } else {
+        el.textContent = p.slice(0, --j);
+        if (j === 0) { deleting = false; i = (i + 1) % phrases.length; }
+      }
+      setTimeout(tick, deleting ? 35 : 70);
+    }
+    tick();
+  })();
+
+  // Scroll reveal
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  document.querySelectorAll(".reveal").forEach(el => io.observe(el));
+
+  // Card spotlight
+  document.querySelectorAll(".card-tile").forEach(card => {
+    card.addEventListener("mousemove", e => {
+      const r = card.getBoundingClientRect();
+      card.style.setProperty("--x", `${e.clientX - r.left}px`);
+      card.style.setProperty("--y", `${e.clientY - r.top}px`);
+    });
+  });
+</script>
+</body>
+</html>
